@@ -82,6 +82,18 @@ App roles de Entra ID (claim `roles` -> `ROLE_*`, `security/JwtAuthConverter`), 
 
 `reserve` y `release` los llama reservations con el JWT del usuario que confirma/cancela (Admin u Operador, los mismos que pueden cambiar el estado de una reserva).
 
+## Docker
+
+`Dockerfile` multi-stage: build con `maven:3.9-eclipse-temurin-17` y runtime `eclipse-temurin:17-jre` con usuario no root, puerto **8085** y `JAVA_TOOL_OPTIONS=-XX:MaxRAMPercentage=75`. Se levanta junto al resto del backend con el compose unico de `infra` (ver su README):
+
+```powershell
+cd ..\infra
+docker compose up -d --build catalog
+docker compose logs -f catalog
+```
+
+En el compose usa el wallet montado en `/wallet` (solo lectura) con `DB_URL=jdbc:oracle:thin:@andesstaydb_tp?TNS_ADMIN=/wallet`, usuario `ANDESSTAY_CATALOG` y clave `CATALOG_DB_PASSWORD`. Healthcheck: `GET http://localhost:8085/actuator/health`.
+
 ## Tests
 
 ```powershell
